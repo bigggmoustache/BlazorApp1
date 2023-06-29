@@ -1,0 +1,71 @@
+﻿@page "/fetchdata"
+@using BlazorApp1.Shared
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<button class="btn btn-primary" @onclick="DoStuff">Do Stuff</button>
+<br />
+@if (thing.Name == "Buhhh")
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p><em>Thing name is @thing.Name</em></p>
+    
+}
+
+<button class="btn btn-primary" @onclick="DoListStuff">Do List Stuff</button>
+<br />
+@if (thingList.Count() < 1)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Thing Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var thing in thingList)
+            {
+                <tr>
+                    <td>@thing.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+@code {
+    string FirstName = "";
+    string LastName = "";
+    Thing thing = new Thing();
+    List<Thing> thingList = new List<Thing>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        thing.Name = "Buhhh";
+    }
+
+    public async Task DoStuff()
+    {
+        thing = await Http.GetFromJsonAsync<Thing>("WeatherForecast/DoStuff");
+    }
+
+    public async Task DoListStuff()
+    {
+        thingList = await Http.GetFromJsonAsync<List<Thing>>("WeatherForecast/DoListStuff");
+    }
+}

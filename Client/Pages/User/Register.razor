@@ -1,0 +1,55 @@
+﻿@page "/Register"
+@using BlazorApp1.Shared
+@inject HttpClient Http
+
+
+<h3>Register</h3>
+
+@if (String.IsNullOrEmpty(userCreationStatus))
+{
+    <form onsubmit="event.PreventDefault();">
+        <div class="form-group">
+            <label for="userName">Name</label>
+            <input id="userName" class="form-control" type="text" @bind="@Username" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" class="form-control" type="email" @bind="@Email" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Submit</button>
+    </form>
+}
+else
+{
+    @userCreationStatus
+}
+
+
+@code {
+    string Username;
+    string Email;
+    string userCreationStatus = "";
+
+
+    public async Task RegisterUser()
+    {
+        User user = new User() { Email = Email, Username = Username };
+        try
+        {
+            
+            var response = await Http.PostAsJsonAsync<User>("User/CreateUser", user);
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var userCreationStatus = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex}");
+        }
+    }
+}
