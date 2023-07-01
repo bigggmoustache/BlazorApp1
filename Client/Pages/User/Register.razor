@@ -1,5 +1,6 @@
 ﻿@page "/Register"
 @using BlazorApp1.Shared
+@using System.ComponentModel.DataAnnotations;
 @inject HttpClient Http
 
 
@@ -7,19 +8,12 @@
 
 @if (String.IsNullOrEmpty(userCreationStatus))
 {
-    <form onsubmit="event.PreventDefault();">
-        <div class="form-group">
-            <label for="userName">Name</label>
-            <input id="userName" class="form-control" type="text" @bind="@Username" />
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input id="email" class="form-control" type="email" @bind="@Email" />
-        </div>
-
-        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Submit</button>
-    </form>
+    <EditForm Model="FormModel" OnSubmit="RegisterUser">
+        <DataAnnotationsValidator />
+            <InputText @bind-Value="FormModel.Username" />
+            <InputText @bind-Value="FormModel.Email" />
+            <button type="submit">Submit</button>
+    </EditForm>
 }
 else
 {
@@ -28,14 +22,22 @@ else
 
 
 @code {
-    string Username;
-    string Email;
+    public  class UserFormModel
+    {
+        [Required]
+        public string Username { get; set; } = "";
+        [EmailAddress]
+        public string Email { get; set; } = "";
+    }
+
+    public UserFormModel FormModel { get; set; } = new();
+
     string userCreationStatus = "";
 
 
     public async Task RegisterUser()
     {
-        User user = new User() { Email = Email, Username = Username };
+        User user = new User() { Email = FormModel.Email, Username = FormModel.Username };
         try
         {
             
